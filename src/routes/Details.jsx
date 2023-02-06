@@ -1,14 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { useContext, useState } from "react";
+import { lazy, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import AdoptedPetContext from "./AdoptedPetContext";
+import AdoptedPetContext from "../AdoptedPetContext";
 
-import Carousel from "./Carousel";
-import ErrorBoundary from "./ErrorBoundary";
-import Modal from "./Modal";
+import Carousel from "../Carousel";
+import ErrorBoundary from "../ErrorBoundary";
+import Spinner from "../Spinner";
 
-import fetchPet from "./fetchPet";
+import fetchPet from "../fetchPet";
+
+const Modal = lazy(() => import("../Modal"));
 
 const Details = () => {
   const { id } = useParams();
@@ -18,11 +20,7 @@ const Details = () => {
   const [, setAdoptedPet] = useContext(AdoptedPetContext);
 
   if (isLoading) {
-    return (
-      <div className="loading-pane">
-        <h2 className="loader">🌀</h2>
-      </div>
-    );
+    return <Spinner />;
   }
 
   const pet = data.pets[0];

@@ -1,12 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import AdoptedPetContext from "./AdoptedPetContext";
 
-import Details from "./Details";
-import Navigation from "./Navigation";
-import SearchParams from "./SearchParams";
+import Spinner from "./Spinner";
+
+const Details = lazy(() => import("./routes/Details"));
+const Home = lazy(() => import("./routes/Home"));
+const Navigation = lazy(() => import("./routes/Navigation"));
 
 const router = createBrowserRouter([
   {
@@ -15,7 +17,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <SearchParams />,
+        element: <Home />,
       },
       {
         path: "details/:id",
@@ -38,11 +40,13 @@ const App = () => {
   const adoptedPet = useState(null);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AdoptedPetContext.Provider value={adoptedPet}>
-        <RouterProvider router={router} />
-      </AdoptedPetContext.Provider>
-    </QueryClientProvider>
+    <AdoptedPetContext.Provider value={adoptedPet}>
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback={<Spinner />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </QueryClientProvider>
+    </AdoptedPetContext.Provider>
   );
 };
 
